@@ -1,6 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Drawing;
+using System.Threading;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Color = Microsoft.Xna.Framework.Color;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Chip8Emu
 {
@@ -8,17 +13,27 @@ namespace Chip8Emu
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private Chip _chip;
+        private readonly int _scaleBy = 12;
 
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
+
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferWidth = 64 * _scaleBy;
+            _graphics.PreferredBackBufferHeight = 32 * _scaleBy;
+            _graphics.ApplyChanges();
+            _chip = new Chip();
+            _chip.LoadRom();
+            _chip.Start();
 
             base.Initialize();
         }
@@ -38,20 +53,41 @@ namespace Chip8Emu
 
             // TODO: Add your update logic here
 
+            _chip.Update();
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            
+
             // TODO: Add your drawing code here
             Texture2D _texture;
             _texture = new Texture2D(GraphicsDevice, 1, 1);
-            _texture.SetData(new Color[]{Color.DarkCyan});
-            
+            _texture.SetData(new Color[] {Color.DarkCyan});
+
+
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_texture, new Rectangle(100,100,100,100), Color.White);
+            for (var y = 0; y < 32; y++)
+            {
+                for (var x = 0; x < 64; x++)
+                {
+                    if (_chip._cpu.Display[x, y])
+                    {
+                        _spriteBatch.Draw(_texture, new Rectangle(x * _scaleBy,
+                            y * _scaleBy,
+                            1 * _scaleBy,
+                            1 * _scaleBy), Color.Aqua);
+                    }
+                    else
+                    {
+                        _spriteBatch.Draw(_texture, new Rectangle(x * _scaleBy,
+                            y * _scaleBy,
+                            1 * _scaleBy,
+                            1 * _scaleBy), Color.Black);
+                    }
+                }
+            }
 
             _spriteBatch.End();
             base.Draw(gameTime);
