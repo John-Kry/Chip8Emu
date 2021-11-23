@@ -12,7 +12,7 @@ namespace Chip8Emu
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/breakout.ch8", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/PONG2", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }
@@ -69,8 +69,8 @@ namespace Chip8Emu
         {
             if (_cpu.saveKeypressIntoThisVx != 0x0)
             {
-                _cpu.saveKeypressIntoThisVx = _Keyboard.GetMostRecentKey();
-                return;
+                _cpu.V[_cpu.saveKeypressIntoThisVx] = _Keyboard.GetMostRecentKey();
+                _cpu.saveKeypressIntoThisVx = 0x0;
             }
             if (_cpu.DelayTimer > 0)
             {

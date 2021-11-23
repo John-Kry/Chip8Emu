@@ -8,14 +8,13 @@ namespace Chip8Emu
 {
     public class Keyboard
     {
-        private Dictionary<int, byte> _AvailableKeys;
-        private byte[] _pressedKeys = new byte[16];
-        private static KeyboardState previousState;
+        private Dictionary<int, byte> _availableKeys;
+        private readonly byte[] _pressedKeys = new byte[16];
         public bool IsWaiting = false;
 
         public void Initialize()
         {
-            _AvailableKeys = new Dictionary<int, byte>()
+            _availableKeys = new Dictionary<int, byte>()
             {
                 {(int)Keys.D1, 0x1}, // 1
                 {(int)Keys.D2, 0x2}, // 2
@@ -38,12 +37,12 @@ namespace Chip8Emu
 
         public byte GetMostRecentKey()
         {
-            return _pressedKeys.FirstOrDefault(key => key != 0x0);
+            return (byte)Array.FindIndex(_pressedKeys, row => row == 0x1);
         }
 
         private byte GetKeyByte(int keyInt)
         {
-            _AvailableKeys.TryGetValue(keyInt, out var value);
+            _availableKeys.TryGetValue(keyInt, out var value);
             return value;
         }
 

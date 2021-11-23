@@ -136,8 +136,8 @@ namespace Chip8Emu
                             V[opData.x] = (byte) (V[opData.y] - V[opData.x]);
                             break;
                         case 0xE:
-                            V[0xF] = (byte) (V[opData.x] & 0x80);
-                            V[opData.x] <<= 1;
+                            V[0xF] = (byte) ((V[opData.x] >> 7) & 0x01);
+                            V[opData.x] = (byte)(V[opData.x] << 1);
                             break;
                         default:
                             LogNotImplemented(opData);
@@ -234,7 +234,7 @@ namespace Chip8Emu
                     else if (opData.nn == 0x0A)
                     {
                         _keyboard.IsWaiting = true;
-                        saveKeypressIntoThisVx = this.V[opData.x];
+                        saveKeypressIntoThisVx = opData.x;
                     }
                     else if (opData.nn == 0x15)
                     {
