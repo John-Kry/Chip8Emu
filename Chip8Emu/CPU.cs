@@ -12,9 +12,14 @@ namespace Chip8Emu
         public byte DelayTimer;
         public byte SoundTimer;
         public ushort PC = 0;
-        public byte Keyboard;
         public bool[,] Display = new bool[64, 32];
         private Random _random = new Random();
+        private Keyboard _keyboard;
+
+        public CPU(Keyboard keyboard)
+        {
+            _keyboard = keyboard;
+        }
 
         public void ExecuteOp(OperationData opData)
         {
@@ -144,7 +149,7 @@ namespace Chip8Emu
                     this.I = opData.nnn;
                     break;
                 case 0xC:
-                    V[opData.x] = (byte)(_random.Next(255) & opData.nn);
+                    V[opData.x] = (byte) (_random.Next(255) & opData.nn);
                     break;
                 case 0xD:
                     var xVal = this.V[opData.x];
@@ -200,11 +205,17 @@ namespace Chip8Emu
                 case 0xE:
                     if (opData.nn == 0x9E)
                     {
-                        // key == vx
-                        
-                    }else if (opData.nn == 0xA1)
+                        if (_keyboard.IsKeyPressed(V[opData.x]))
+                        {
+                            PC += 2;
+                        }
+                    }
+                    else if (opData.nn == 0xA1)
                     {
-                        // key != vx
+                        if (!_keyboard.IsKeyPressed(V[opData.x]))
+                        {
+                            PC += 2;
+                        }
                     }
                     else
                     {
@@ -220,6 +231,7 @@ namespace Chip8Emu
                     else if (opData.nn == 0x0A)
                     {
                         //TODO get keypress
+                        Console.WriteLine("UHH~");
                     }
                     else if (opData.nn == 0x15)
                     {
@@ -235,7 +247,7 @@ namespace Chip8Emu
                     }
                     else if (opData.nn == 0x29)
                     {
-                        I = (ushort)(V[opData.x] * 5);
+                        I = (ushort) (V[opData.x] * 5);
                     }
                     else if (opData.nn == 0x55)
                     {

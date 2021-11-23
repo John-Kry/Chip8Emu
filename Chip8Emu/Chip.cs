@@ -9,15 +9,18 @@ namespace Chip8Emu
         private byte[] readBytes;
         public CPU _cpu;
         public bool IsRunning;
+        public Keyboard _Keyboard;
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/tetris.ch8", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/pong.ch8", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }
 
-            _cpu = new CPU();
+            _Keyboard = new Keyboard();
+            _cpu = new CPU(_Keyboard);
+            _Keyboard.Initialize();
         }
 
         public void Start()

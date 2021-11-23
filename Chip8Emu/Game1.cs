@@ -50,7 +50,10 @@ namespace Chip8Emu
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
                 Microsoft.Xna.Framework.Input.Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            
+            
+            _chip._Keyboard.ProcessState(Microsoft.Xna.Framework.Input.Keyboard.GetState());
+            
             // TODO: Add your update logic here
 
             _chip.Update();

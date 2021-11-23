@@ -1,38 +1,84 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Xna.Framework.Input;
 
 namespace Chip8Emu
 {
     public class Keyboard
     {
         private Dictionary<int, byte> _AvailableKeys;
-
+        private byte[] _pressedKeys = new byte[16];
+        private static KeyboardState previousState;
 
         public void Initialize()
         {
             _AvailableKeys = new Dictionary<int, byte>()
             {
-                {49, 0x1}, // 1
-                {50, 0x2}, // 2
-                {51, 0x3}, // 3
-                {52, 0xc}, // 4
-                {81, 0x4}, // Q
-                {87, 0x5}, // W
-                {69, 0x6}, // E
-                {82, 0xD}, // R
-                {65, 0x7}, // A
-                {83, 0x8}, // S
-                {68, 0x9}, // D
-                {70, 0xE}, // F
-                {90, 0xA}, // Z
-                {88, 0x0}, // X
-                {67, 0xB}, // C
-                {86, 0xF}, // V
+                {(int)Keys.D1, 0x1}, // 1
+                {(int)Keys.D2, 0x2}, // 2
+                {(int)Keys.D3, 0x3}, // 3
+                {(int)Keys.D4, 0xC}, // 4
+                {(int)Keys.Q, 0x4}, // Q
+                {(int)Keys.W, 0x5}, // W
+                {(int)Keys.E, 0x6}, // E
+                {(int)Keys.R, 0xD}, // R
+                {(int)Keys.A, 0x7}, // A
+                {(int)Keys.S, 0x8}, // S
+                {(int)Keys.D, 0x9}, // D
+                {(int)Keys.F, 0xE}, // F
+                {(int)Keys.Z, 0xA}, // Z
+                {(int)Keys.X, 0x0}, // X
+                {(int)Keys.C, 0xB}, // C
+                {(int)Keys.V, 0xF}, // V
             };
         }
 
-        public bool isKeyPressed(int keyCode)
+        private byte GetKeyByte(int keyInt)
         {
-            return true;
+            _AvailableKeys.TryGetValue(keyInt, out var value);
+            return value;
+        }
+
+        public void AddKeyToPressed(int keyInt)
+        {
+            var keybyte = GetKeyByte(keyInt);
+            _pressedKeys[keybyte] = 0x1;
+        }
+
+        public void RemoveKeyFromPressed(int keyInt)
+        {
+            var keybyte = GetKeyByte(keyInt);
+            _pressedKeys[keybyte] = 0x0;
+        }
+
+        public void ProcessState(KeyboardState currentState)
+        {
+            for (var i = 0; i < _pressedKeys.Length; i++)
+            {
+                _pressedKeys[i] = 0x0;
+            }
+            var keysPressedCurrently = currentState.GetPressedKeys();
+
+            for (var i = 0; i < keysPressedCurrently.Length; i++)
+            {
+                AddKeyToPressed((int) keysPressedCurrently[i]);
+            }
+
+            foreach(var item in _pressedKeys)
+            {
+                if (item == 0x1)
+                {
+                    Console.WriteLine(item.ToString());
+                }
+            }
+
+        }
+
+
+        public bool IsKeyPressed(byte keyCode)
+        {
+            return _pressedKeys[keyCode] == 0x1;
         }
     }
 }
