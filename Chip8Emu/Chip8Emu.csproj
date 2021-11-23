@@ -31,5 +31,11 @@
     <Content Include="roms/*">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Remove="smw2_coin.wav" />
 </ItemGroup>
+    <ItemGroup>
+     <Content Include="smw2_coin.wav">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+     </Content>
+    </ItemGroup>
 </Project>

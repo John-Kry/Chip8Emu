@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Threading;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Color = Microsoft.Xna.Framework.Color;
@@ -15,6 +17,8 @@ namespace Chip8Emu
         private SpriteBatch _spriteBatch;
         private Chip _chip;
         private readonly int _scaleBy = 12;
+        SoundEffect mySound;
+        SoundEffectInstance mySoundInstance;
 
         public Game1()
         {
@@ -31,6 +35,13 @@ namespace Chip8Emu
             _graphics.PreferredBackBufferWidth = 64 * _scaleBy;
             _graphics.PreferredBackBufferHeight = 32 * _scaleBy;
             _graphics.ApplyChanges();
+            
+            var fs = new FileStream("smw2_coin.wav", FileMode.Open);
+            mySound = SoundEffect.FromStream(fs);
+            mySoundInstance = mySound.CreateInstance();
+            mySoundInstance.IsLooped = true;
+
+            
             _chip = new Chip();
             _chip.LoadRom();
             _chip.Start();
@@ -53,15 +64,19 @@ namespace Chip8Emu
             
             
             _chip._Keyboard.ProcessState(Microsoft.Xna.Framework.Input.Keyboard.GetState());
-            
+            if (_chip._cpu.SoundTimer > 0)
+            {
+                mySoundInstance.Play();
+            }
+            else
+            {
+                mySoundInstance.Stop();
+            }
+
             // TODO: Add your update logic here
             if (!_chip.IsWaitingForInput())
             {
                 _chip.Update();
-            }
-            else
-            {
-                // wait for input
             }
 
             base.Update(gameTime);

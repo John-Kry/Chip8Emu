@@ -12,7 +12,7 @@ namespace Chip8Emu
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/BLITZ", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/breakout.ch8", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }
@@ -76,8 +76,14 @@ namespace Chip8Emu
             {
                 _cpu.DelayTimer -= 1;
             }
+
+            if (_cpu.SoundTimer > 0)
+            {
+                _cpu.SoundTimer -= 1;
+            }
             for (var instructionIndex = 0; instructionIndex < 10; instructionIndex++)
             {
+                // Skip execution until a key has been entered
                 if (_Keyboard.IsWaiting)
                 {
                     return;
