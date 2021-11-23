@@ -8,19 +8,24 @@ namespace Chip8Emu
     {
         private byte[] readBytes;
         public CPU _cpu;
-        public bool IsRunning;
         public Keyboard _Keyboard;
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/pong.ch8", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/BLITZ", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }
 
             _Keyboard = new Keyboard();
             _cpu = new CPU(_Keyboard);
+            LoadSprites();
             _Keyboard.Initialize();
+        }
+
+        public bool IsWaitingForInput()
+        {
+            return _Keyboard.IsWaiting;
         }
 
         public void Start()
@@ -29,8 +34,6 @@ namespace Chip8Emu
             {
                 _cpu.RAM[512 + i] = readBytes[i];
             }
-
-            IsRunning = true;
 
             _cpu.PC = 512;
             
@@ -64,8 +67,21 @@ namespace Chip8Emu
 
         public void Update()
         {
-            for (var instructionIndex = 0; instructionIndex < 16; instructionIndex++)
+            if (_cpu.saveKeypressIntoThisVx != 0x0)
             {
+                _cpu.saveKeypressIntoThisVx = _Keyboard.GetMostRecentKey();
+                return;
+            }
+            if (_cpu.DelayTimer > 0)
+            {
+                _cpu.DelayTimer -= 1;
+            }
+            for (var instructionIndex = 0; instructionIndex < 10; instructionIndex++)
+            {
+                if (_Keyboard.IsWaiting)
+                {
+                    return;
+                }
                 byte byte1 = _cpu.RAM[_cpu.PC];
                 byte byte2 = _cpu.RAM[_cpu.PC + 1];
                 _cpu.PC += 2;

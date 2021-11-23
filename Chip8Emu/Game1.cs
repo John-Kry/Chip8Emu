@@ -55,8 +55,15 @@ namespace Chip8Emu
             _chip._Keyboard.ProcessState(Microsoft.Xna.Framework.Input.Keyboard.GetState());
             
             // TODO: Add your update logic here
+            if (!_chip.IsWaitingForInput())
+            {
+                _chip.Update();
+            }
+            else
+            {
+                // wait for input
+            }
 
-            _chip.Update();
             base.Update(gameTime);
         }
 

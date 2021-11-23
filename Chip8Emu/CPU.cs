@@ -15,6 +15,7 @@ namespace Chip8Emu
         public bool[,] Display = new bool[64, 32];
         private Random _random = new Random();
         private Keyboard _keyboard;
+        public byte saveKeypressIntoThisVx;
 
         public CPU(Keyboard keyboard)
         {
@@ -80,7 +81,6 @@ namespace Chip8Emu
                     break;
 
 
-                // For this instruction, this is not the case. If V0 contains FF and you execute 6001, the CHIP-8’s flag register VF is not affected.
                 case 7:
                     this.V[opData.x] += opData.nn;
                     break;
@@ -147,6 +147,9 @@ namespace Chip8Emu
                     break;
                 case 0xA:
                     this.I = opData.nnn;
+                    break;
+                case 0xB:
+                    PC = (ushort) (opData.nnn + V[0x0]);
                     break;
                 case 0xC:
                     V[opData.x] = (byte) (_random.Next(255) & opData.nn);
@@ -230,8 +233,8 @@ namespace Chip8Emu
                     }
                     else if (opData.nn == 0x0A)
                     {
-                        //TODO get keypress
-                        Console.WriteLine("UHH~");
+                        _keyboard.IsWaiting = true;
+                        saveKeypressIntoThisVx = this.V[opData.x];
                     }
                     else if (opData.nn == 0x15)
                     {
@@ -249,13 +252,6 @@ namespace Chip8Emu
                     {
                         I = (ushort) (V[opData.x] * 5);
                     }
-                    else if (opData.nn == 0x55)
-                    {
-                        for (var registerIndex = 0; registerIndex <= opData.x; registerIndex++)
-                        {
-                            this.RAM[this.I + registerIndex] = V[registerIndex];
-                        }
-                    }
                     else if (opData.nn == 0x33)
                     {
                         var temp = V[opData.x];
@@ -265,6 +261,14 @@ namespace Chip8Emu
                         temp /= 10;
                         this.RAM[I] = temp;
                     }
+                    else if (opData.nn == 0x55)
+                    {
+                        for (var registerIndex = 0; registerIndex <= opData.x; registerIndex++)
+                        {
+                            this.RAM[this.I + registerIndex] = V[registerIndex];
+                        }
+                    }
+
                     else if (opData.nn == 0x65)
                     {
                         for (var registerIndex = 0; registerIndex <= opData.x; registerIndex++)
@@ -279,13 +283,6 @@ namespace Chip8Emu
 
                     break;
 
-                case 9:
-                    if (V[opData.x] != V[opData.y])
-                    {
-                        PC += 2;
-                    }
-
-                    break;
                 default:
                     LogNotImplemented(opData);
                     break;
