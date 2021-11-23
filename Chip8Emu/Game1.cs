@@ -77,7 +77,7 @@ namespace Chip8Emu
                         _spriteBatch.Draw(_texture, new Rectangle(x * _scaleBy,
                             y * _scaleBy,
                             1 * _scaleBy,
-                            1 * _scaleBy), Color.Aqua);
+                            1 * _scaleBy), Color.LightGreen);
                     }
                     else
                     {

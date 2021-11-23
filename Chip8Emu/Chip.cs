@@ -12,7 +12,7 @@ namespace Chip8Emu
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/ibm_logo.ch8", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/BC_test.ch8", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }
