@@ -14,6 +14,7 @@ namespace Chip8Emu
         public ushort PC = 0;
         public byte Keyboard;
         public bool[,] Display = new bool[64, 32];
+        private Random _random = new Random();
 
         public void ExecuteOp(OperationData opData)
         {
@@ -21,7 +22,7 @@ namespace Chip8Emu
             {
                 case 0:
                     // may be wrong
-                    if (opData.y == 0xF)
+                    if (opData.nn == 0xE0)
                     {
                         for (var x = 0; x < Display.GetLength(0); x++)
                         {
@@ -34,6 +35,10 @@ namespace Chip8Emu
                     else if (opData.nn == 0xEE)
                     {
                         this.PC = stack.Pop();
+                    }
+                    else
+                    {
+                        LogNotImplemented(opData);
                     }
 
                     break;
@@ -130,12 +135,16 @@ namespace Chip8Emu
                             V[opData.x] <<= 1;
                             break;
                         default:
+                            LogNotImplemented(opData);
                             break;
                     }
 
                     break;
                 case 0xA:
                     this.I = opData.nnn;
+                    break;
+                case 0xC:
+                    V[opData.x] = (byte)(_random.Next(255) & opData.nn);
                     break;
                 case 0xD:
                     var xVal = this.V[opData.x];
@@ -188,8 +197,22 @@ namespace Chip8Emu
                     }
 
                     break;
+                case 0xE:
+                    if (opData.nn == 0x9E)
+                    {
+                        // key == vx
+                        
+                    }else if (opData.nn == 0xA1)
+                    {
+                        // key != vx
+                    }
+                    else
+                    {
+                        LogNotImplemented(opData);
+                    }
+
+                    break;
                 case 0xF:
-                    Console.WriteLine(opData.n.ToString());
                     if (opData.nn == 0x07)
                     {
                         V[opData.x] = DelayTimer;
@@ -209,6 +232,10 @@ namespace Chip8Emu
                     else if (opData.nn == 0x1E)
                     {
                         I += V[opData.x];
+                    }
+                    else if (opData.nn == 0x29)
+                    {
+                        I = (ushort)(V[opData.x] * 5);
                     }
                     else if (opData.nn == 0x55)
                     {
@@ -235,7 +262,7 @@ namespace Chip8Emu
                     }
                     else
                     {
-                        Console.WriteLine("NO`:");
+                        LogNotImplemented(opData);
                     }
 
                     break;
@@ -248,9 +275,14 @@ namespace Chip8Emu
 
                     break;
                 default:
-                    Console.WriteLine($"Not implemented: {(int) opData.op}");
+                    LogNotImplemented(opData);
                     break;
             }
+        }
+
+        static void LogNotImplemented(OperationData opData)
+        {
+            Console.WriteLine($"Not Implemented: op: {opData.op}, nn: {opData.nn}, n: {opData.n}");
         }
     }
 }
