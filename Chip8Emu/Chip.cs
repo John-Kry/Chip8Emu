@@ -12,7 +12,7 @@ namespace Chip8Emu
 
         public void LoadRom()
         {
-            using (BinaryReader reader = new BinaryReader(new FileStream("roms/PONG2", FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(new FileStream("roms/UFO", FileMode.Open)))
             {
                 readBytes = reader.ReadBytes(4096);
             }

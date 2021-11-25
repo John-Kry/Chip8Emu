@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Microsoft.Xna.Framework.Input;
 
 namespace Chip8Emu
@@ -10,7 +8,7 @@ namespace Chip8Emu
     {
         private Dictionary<int, byte> _availableKeys;
         private readonly byte[] _pressedKeys = new byte[16];
-        public bool IsWaiting = false;
+        public bool IsWaiting;
 
         public void Initialize()
         {
@@ -46,7 +44,7 @@ namespace Chip8Emu
             return value;
         }
 
-        public void AddKeyToPressed(int keyInt)
+        private void AddKeyToPressed(int keyInt)
         {
             var keybyte = GetKeyByte(keyInt);
             _pressedKeys[keybyte] = 0x1;
@@ -60,9 +58,9 @@ namespace Chip8Emu
             }
             var keysPressedCurrently = currentState.GetPressedKeys();
 
-            for (var i = 0; i < keysPressedCurrently.Length; i++)
+            foreach (var t in keysPressedCurrently)
             {
-                AddKeyToPressed((int) keysPressedCurrently[i]);
+                AddKeyToPressed((int) t);
                 IsWaiting = false;
             }
 
